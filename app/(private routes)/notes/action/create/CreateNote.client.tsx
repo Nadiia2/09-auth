@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import NoteForm from "../../../../components/NoteForm/NoteForm";
+import NoteForm from "../../../../../components/NoteForm/NoteForm";
 import css from "./CreateNote.module.css";
 
 export default function CreateNote() {

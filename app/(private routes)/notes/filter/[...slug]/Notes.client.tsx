@@ -2,16 +2,16 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import NoteList from "../../../../components/NoteList/NoteList";
+import NoteList from "../../../../../components/NoteList/NoteList";
 import css from "./NotesPage.module.css";
 import {
   fetchNotes,
   type FetchNotesResponse,
-} from "../../../../lib/api/clientApi";
+} from "../../../../../lib/api/clientApi";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import Pagination from "../../../../components/Pagination/Pagination";
+import Pagination from "../../../../../components/Pagination/Pagination";
 // import Modal from "../../../../components/Modal/Modal";
-import SearchBox from "../../../../components/SearchBox/SearchBox";
+import SearchBox from "../../../../../components/SearchBox/SearchBox";
 import { useDebouncedCallback } from "use-debounce";
 import toast, { Toaster } from "react-hot-toast";
 // import NoteForm from "../../../../components/NoteForm/NoteForm";
