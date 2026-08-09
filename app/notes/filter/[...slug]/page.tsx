@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-query";
 import type { Metadata } from "next";
 
-import { fetchNotes } from "@/lib/api";
+import { fetchNotes } from "@/lib/api/clientApi";
 import NotesClient from "./Notes.client";
 
 type FilteredNotesProps = {

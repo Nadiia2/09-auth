@@ -1,0 +1,94 @@
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { parseSetCookie } from "cookie";
+import { checkServerSession } from "./lib/api/serverApi";
+
+const privateRoutes = ["/profile", "/notes"];
+const publicRoutes = ["/sign-in", "/sign-up"];
+
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+
+  const isPublicRoute = publicRoutes.some((route) =>
+    pathname.startsWith(route),
+  );
+
+  const isPrivateRoute = privateRoutes.some((route) =>
+    pathname.startsWith(route),
+  );
+
+  if (!accessToken) {
+    if (refreshToken) {
+      // Якщо accessToken відсутній, але є refreshToken —
+      // потрібно перевірити сесію.
+      const data = await checkServerSession();
+
+      const setCookie = data.headers["set-cookie"];
+
+      if (setCookie) {
+        const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
+
+        for (const cookieStr of cookieArray) {
+          const parsed = parseSetCookie(cookieStr);
+
+          if (parsed.value) {
+            cookieStore.set(parsed.name, parsed.value, parsed);
+          }
+        }
+
+        // Якщо сесія активна і користувач відкриває
+        // публічний маршрут — редірект на профіль.
+        if (isPublicRoute) {
+          return NextResponse.redirect(new URL("/profile", request.url), {
+            headers: {
+              Cookie: cookieStore.toString(),
+            },
+          });
+        }
+
+        // Якщо сесія активна і маршрут приватний —
+        // дозволяємо доступ.
+        if (isPrivateRoute) {
+          return NextResponse.next({
+            headers: {
+              Cookie: cookieStore.toString(),
+            },
+          });
+        }
+      }
+    }
+
+    // Якщо refreshToken або сесії немає:
+    // публічний маршрут — дозволяємо доступ.
+    if (isPublicRoute) {
+      return NextResponse.next();
+    }
+
+    // Приватний маршрут — редірект на sign-in.
+    if (isPrivateRoute) {
+      return NextResponse.redirect(new URL("/sign-in", request.url));
+    }
+  }
+
+  // Якщо accessToken існує:
+  // публічний маршрут — редірект на profile.
+  if (isPublicRoute) {
+    return NextResponse.redirect(new URL("/profile", request.url));
+  }
+
+  // Приватний маршрут — дозволяємо доступ.
+  if (isPrivateRoute) {
+    return NextResponse.next();
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/profile/:path*", "/notes/:path*", "/sign-in", "/sign-up"],
+};

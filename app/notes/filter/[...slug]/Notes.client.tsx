@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import NoteList from "../../../../components/NoteList/NoteList";
 import css from "./NotesPage.module.css";
-import { fetchNotes, type FetchNotesResponse } from "../../../../lib/api";
+import {
+  fetchNotes,
+  type FetchNotesResponse,
+} from "../../../../lib/api/clientApi";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Pagination from "../../../../components/Pagination/Pagination";
 // import Modal from "../../../../components/Modal/Modal";
