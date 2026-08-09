@@ -44,7 +44,7 @@ export async function proxy(request: NextRequest) {
         // Якщо сесія активна і користувач відкриває
         // публічний маршрут — редірект на профіль.
         if (isPublicRoute) {
-          return NextResponse.redirect(new URL("/profile", request.url), {
+          return NextResponse.redirect(new URL("/", request.url), {
             headers: {
               Cookie: cookieStore.toString(),
             },
@@ -78,7 +78,7 @@ export async function proxy(request: NextRequest) {
   // Якщо accessToken існує:
   // публічний маршрут — редірект на profile.
   if (isPublicRoute) {
-    return NextResponse.redirect(new URL("/profile", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   // Приватний маршрут — дозволяємо доступ.
